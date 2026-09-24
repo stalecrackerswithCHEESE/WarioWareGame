@@ -1,3 +1,131 @@
 [gd_scene format=3 uid="uid://dvruq6dqyomw8"]
 
-[node name="Node2D" type="Node2D" unique_id=1761075192]
+[ext_resource type="Texture2D" uid="uid://bmty57xvonlw1" path="res://bg2.jpeg" id="1_cn3xy"]
+[ext_resource type="Texture2D" uid="uid://ddfv82k87qmio" path="res://garleeck.png" id="2_cn3xy"]
+
+[sub_resource type="GDScript" id="GDScript_xn5dp"]
+resource_name = "timer_screen"
+script/source = "extends Node2D
+@onready var garlic_container: HBoxContainer = $GarlicContainer
+@onready var garlic: TextureRect = $GarlicContainer/Garlic
+@onready var garlic_2: TextureRect = $GarlicContainer/Garlic2
+@onready var garlic_3: TextureRect = $GarlicContainer/Garlic3
+@onready var garlic_4: TextureRect = $GarlicContainer/Garlic4
+@onready var garlic_5: TextureRect = $GarlicContainer/Garlic5
+@onready var level: RichTextLabel = $Level
+@onready var timer: RichTextLabel = $Timer
+
+var time
+
+func _ready() -> void:
+	await Timer(5.0) # using the function created
+	
+	if Global.minigames_done < 3: # if you havent completed 3 minigames yet 
+		Global.minigames_done = Global.minigames_done +1
+		get_tree().change_scene_to_file(\"res://scenes/minigame_\" + str(Global.minigames_done) + \".tscn\") # changes your scene by arranging this frankenstein path. 
+# Above, your script is being told to go to the next minigame. If the 
+# current minigame is Level 1, then you would be on minigame 1. If you 
+# complete that level, you have the minigames_done add one, and then you 
+# look for the scene titled `minigame_` and then whatever minigame number 
+# should be next. Make sure you name your minigame saves appropriately.
+
+	else:
+		get_tree().change_scene_to_file(\"res://scenes/title_screen.tscn\") # changes your scene
+	
+
+func _process(delta: float) -> void: # runs EVERY FRAME
+	match Global.lives: # asks or checks if lives is equal to one of 
+#these values, cool hack. by the way this is a horrid way to illustrate the 
+#lives visually so later you can always find alternative code. Now, dw abt it.
+
+		4:
+			garlic.hide()
+		3:
+			garlic.hide()
+			garlic_2.hide()
+		2:
+			garlic.hide()
+			garlic_2.hide()
+			garlic_3.hide()
+		1:
+			garlic.hide()
+			garlic_2.hide()
+			garlic_3.hide()
+			garlic_4.hide()
+		0:
+			garlic_container.hide() # just hides everything
+	
+	timer.text = str(time) # make ths text reflect the value of the time variable. this makes names easier. the str() converts the int to a String
+	level.text = \"Level \" + str(Global.minigames_done) # this tells you want minigame you're on using concatenation (google the word yo)
+
+func Timer(start_time: float): # making a new function for timer countdown!
+	# we want the timer to go down, and when it reaches 0 it transitions 
+	# to the next scene!
+	
+	time = start_time # make the timer, which is reflected through the timer text, start at your desired number
+	
+	while time > 0.0: # run if timer hasnt reached 0
+		await wait(0.1) # asks script to wait on this function. the 'wait' name for the function does nothing here, as await is just telling the scrpit to wait for the function to complete before progressing
+		time -= 0.1 # remove 0.1
+		# progressively get the value smaller and smaller
+	
+	#when timer reaches 0
+	return
+
+func wait(seconds: float) -> void: # write this simple function out for wait!
+	await get_tree().create_timer(seconds).timeout # makes u wait, dw abt this being complex '''
+"
+
+[node name="TimerScreen" type="Node2D" unique_id=1761075192]
+script = SubResource("GDScript_xn5dp")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1885575051]
+offset_right = 1920.0
+offset_bottom = 1080.0
+scale = Vector2(0.603537, 0.603537)
+texture = ExtResource("1_cn3xy")
+
+[node name="GarlicContainer" type="HBoxContainer" parent="." unique_id=1176807424]
+offset_left = 157.00002
+offset_top = 99.0
+offset_right = 1973.0
+offset_bottom = 459.0
+scale = Vector2(0.46872956, 0.4218172)
+
+[node name="Garlic" type="TextureRect" parent="GarlicContainer" unique_id=1606932327]
+layout_mode = 2
+texture = ExtResource("2_cn3xy")
+
+[node name="Garlic2" type="TextureRect" parent="GarlicContainer" unique_id=1492991522]
+layout_mode = 2
+texture = ExtResource("2_cn3xy")
+
+[node name="Garlic3" type="TextureRect" parent="GarlicContainer" unique_id=166476263]
+layout_mode = 2
+texture = ExtResource("2_cn3xy")
+
+[node name="Garlic4" type="TextureRect" parent="GarlicContainer" unique_id=1860753841]
+layout_mode = 2
+texture = ExtResource("2_cn3xy")
+
+[node name="Garlic5" type="TextureRect" parent="GarlicContainer" unique_id=2123981118]
+layout_mode = 2
+texture = ExtResource("2_cn3xy")
+
+[node name="Level" type="RichTextLabel" parent="." unique_id=785841109]
+offset_left = 513.0
+offset_top = 299.0
+offset_right = 695.1792
+offset_bottom = 363.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 42
+text = "Level #"
+
+[node name="Timer" type="RichTextLabel" parent="." unique_id=1919408640]
+offset_left = 554.0
+offset_top = 481.0
+offset_right = 632.0
+offset_bottom = 546.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 42
+text = "0.0"
